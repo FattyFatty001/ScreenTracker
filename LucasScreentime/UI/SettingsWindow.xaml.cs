@@ -160,6 +160,30 @@ public partial class SettingsWindow : Window
         }
     }
 
+    private async void BtnCheckUpdate_Click(object sender, RoutedEventArgs e)
+    {
+        if (_updater is null)
+        {
+            ShowStatus("Auto-updater is not running.", isError: true);
+            return;
+        }
+        BtnCheckUpdate.IsEnabled = false;
+        ShowStatus("Checking for updates…");
+        try
+        {
+            await _updater.CheckNowAsync();
+            ShowStatus("Up to date.");
+        }
+        catch (Exception ex)
+        {
+            ShowStatus($"Update check failed: {ex.Message}", isError: true);
+        }
+        finally
+        {
+            BtnCheckUpdate.IsEnabled = true;
+        }
+    }
+
     private void BtnCancel_Click(object sender, RoutedEventArgs e) => Close();
 
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

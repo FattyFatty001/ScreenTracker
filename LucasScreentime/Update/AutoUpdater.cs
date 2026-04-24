@@ -29,27 +29,33 @@ public sealed class AutoUpdater : IDisposable
         _timer = new Timer(CheckForUpdates, null, TimeSpan.FromSeconds(30), _interval);
     }
 
-    private async void CheckForUpdates(object? state)
+    public async Task CheckNowAsync()
     {
         _nextCheckAt = DateTime.Now + _interval;
 
-        if (string.IsNullOrWhiteSpace(_settings.GitHubRepo)) return;
+        if (string.IsNullOrWhiteSpace(_settings.GitHubRepo))
+            throw new InvalidOperationException("GitHub repo is not configured.");
 
+        var src = new GithubSource(
+            $"https://github.com/{_settings.GitHubRepo}", null, false);
+        var mgr = new UpdateManager(src);
+
+        var update = await mgr.CheckForUpdatesAsync();
+        LastCheckAt = DateTime.Now;
+        LastCheckError = null;
+
+        if (update != null)
+        {
+            await mgr.DownloadUpdatesAsync(update);
+            mgr.ApplyUpdatesAndRestart(update);
+        }
+    }
+
+    private async void CheckForUpdates(object? state)
+    {
         try
         {
-            var src = new GithubSource(
-                $"https://github.com/{_settings.GitHubRepo}", null, false);
-            var mgr = new UpdateManager(src);
-
-            var update = await mgr.CheckForUpdatesAsync();
-            LastCheckAt = DateTime.Now;
-            LastCheckError = null;
-
-            if (update != null)
-            {
-                await mgr.DownloadUpdatesAsync(update);
-                mgr.ApplyUpdatesAndRestart(update);
-            }
+            await CheckNowAsync();
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {

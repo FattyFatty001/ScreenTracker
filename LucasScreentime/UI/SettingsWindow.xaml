@@ -107,6 +107,11 @@
                 </StackPanel>
             </Grid>
 
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                <Button x:Name="BtnCheckUpdate" Content="Check for Updates Now" Padding="12,6"
+                        Click="BtnCheckUpdate_Click"/>
+            </StackPanel>
+
             <!-- Buttons -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,4">
                 <Button x:Name="BtnTest" Content="Send Test Email" Padding="12,6"
