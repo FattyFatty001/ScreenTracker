@@ -120,6 +120,9 @@
             <TextBlock x:Name="TxtStatus" Margin="0,6,0,0"
                        TextWrapping="Wrap" FontSize="12"/>
 
+            <TextBlock x:Name="TxtVersion" Margin="0,14,0,0"
+                       FontSize="11" Foreground="#aaa" HorizontalAlignment="Right"/>
+
         </StackPanel>
     </ScrollViewer>
 </Window>

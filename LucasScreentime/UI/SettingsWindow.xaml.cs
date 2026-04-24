@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Windows;
 using Brushes = System.Windows.Media.Brushes;
 using LucasScreentime.Notifications;
@@ -16,6 +17,9 @@ public partial class SettingsWindow : Window
         _settings = settings;
         _email = email;
         LoadSettings();
+
+        var v = Assembly.GetEntryAssembly()?.GetName().Version;
+        TxtVersion.Text = v is null ? "" : $"v{v.Major}.{v.Minor}.{v.Build}";
     }
 
     private void LoadSettings()
