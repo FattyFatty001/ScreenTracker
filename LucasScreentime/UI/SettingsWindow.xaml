@@ -35,6 +35,11 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="22,16,22,16">
 
+            <TextBlock x:Name="TxtVersion" Margin="0,0,0,0"
+                       FontSize="11" Foreground="#aaa" HorizontalAlignment="Right"/>
+            <TextBlock x:Name="TxtUpdateStatus" Margin="0,2,0,8"
+                       FontSize="11" HorizontalAlignment="Right" TextWrapping="Wrap"/>
+
             <!-- Email -->
             <TextBlock Style="{StaticResource Section}" Text="Email Notifications"/>
             <Separator Margin="0,0,0,4"/>
@@ -124,11 +129,6 @@
 
             <TextBlock x:Name="TxtStatus" Margin="0,6,0,0"
                        TextWrapping="Wrap" FontSize="12"/>
-
-            <TextBlock x:Name="TxtVersion" Margin="0,14,0,0"
-                       FontSize="11" Foreground="#aaa" HorizontalAlignment="Right"/>
-            <TextBlock x:Name="TxtUpdateStatus" Margin="0,2,0,0"
-                       FontSize="11" HorizontalAlignment="Right" TextWrapping="Wrap"/>
 
         </StackPanel>
     </ScrollViewer>
