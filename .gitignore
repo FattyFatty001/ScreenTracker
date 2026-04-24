@@ -1,0 +1,20 @@
+# Build output
+bin/
+obj/
+publish/
+releases/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# Local settings (contains encrypted passwords — never commit)
+**/AppData/

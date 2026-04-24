@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet new *)",
+      "Bash(where dotnet *)",
+      "Read(//c/Program Files/dotnet/**)",
+      "Read(//c/Program Files \\(x86\\)/dotnet/**)",
+      "Bash(\"C:/Program Files/dotnet/dotnet.exe\" --list-sdks)",
+      "Bash(\"C:/Program Files/dotnet/dotnet.exe\" --version)",
+      "Bash(winget search *)",
+      "Bash(winget install *)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/dotnet\")",
+      "Bash(dotnet build *)",
+      "Read(//c/Users/mpear/.nuget/packages/clowd.squirrel/**)",
+      "Read(//c/Users/**)",
+      "Bash(dotnet script *)",
+      "Bash(find \"/c/Users/mpear/.nuget/packages/clowd.squirrel/2.11.1\" -name \"*.dll\" -path \"*net8*\")",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git add *)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\mpear\\.claude\\projects\\c--Apps-Lucas-Screentime"
+    ]
+  }
+}

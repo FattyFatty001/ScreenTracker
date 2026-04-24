@@ -1,0 +1,125 @@
+<Window x:Class="LucasScreentime.UI.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Lucas Screentime — Settings"
+        Width="460" Height="560"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Closing="Window_Closing">
+
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0,2,0,6"/>
+            <Setter Property="Padding" Value="5,4"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="PasswordBox">
+            <Setter Property="Margin" Value="0,2,0,6"/>
+            <Setter Property="Padding" Value="5,4"/>
+            <Setter Property="Height" Value="28"/>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Padding" Value="0,0,0,1"/>
+            <Setter Property="Margin" Value="0,6,0,0"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style x:Key="Section" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Margin" Value="0,14,0,2"/>
+            <Setter Property="Foreground" Value="#222"/>
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="22,16,22,16">
+
+            <!-- Email -->
+            <TextBlock Style="{StaticResource Section}" Text="Email Notifications"/>
+            <Separator Margin="0,0,0,4"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="90"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <Label Content="SMTP Host"/>
+                    <TextBox x:Name="TxtSmtpHost"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <Label Content="Port"/>
+                    <TextBox x:Name="TxtSmtpPort"/>
+                </StackPanel>
+            </Grid>
+
+            <Label Content="Gmail Address (used to send)"/>
+            <TextBox x:Name="TxtSmtpUser"/>
+
+            <Label Content="App Password"/>
+            <PasswordBox x:Name="PbSmtpPassword"/>
+
+            <Label Content="Parent Email 1"/>
+            <TextBox x:Name="TxtParent1"/>
+
+            <Label Content="Parent Email 2 (optional)"/>
+            <TextBox x:Name="TxtParent2"/>
+
+            <!-- Schedule -->
+            <TextBlock Style="{StaticResource Section}" Text="Notification Schedule"/>
+            <Separator Margin="0,0,0,4"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <Label Content="Window Start (HH:MM)"/>
+                    <TextBox x:Name="TxtNotifyStart"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <Label Content="Window End (HH:MM)"/>
+                    <TextBox x:Name="TxtNotifyEnd"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Updates -->
+            <TextBlock Style="{StaticResource Section}" Text="Auto Updates"/>
+            <Separator Margin="0,0,0,4"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="130"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <Label Content="GitHub Repo (owner/repo)"/>
+                    <TextBox x:Name="TxtGitHubRepo"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <Label Content="Check every (min)"/>
+                    <TextBox x:Name="TxtUpdateInterval"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,4">
+                <Button x:Name="BtnTest" Content="Send Test Email" Padding="12,6"
+                        Margin="0,0,8,0" Click="BtnTest_Click"/>
+                <Button Content="Save" Padding="24,6" Margin="0,0,8,0"
+                        Click="BtnSave_Click" IsDefault="True"/>
+                <Button Content="Cancel" Padding="12,6"
+                        Click="BtnCancel_Click" IsCancel="True"/>
+            </StackPanel>
+
+            <TextBlock x:Name="TxtStatus" Margin="0,6,0,0"
+                       TextWrapping="Wrap" FontSize="12"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>
