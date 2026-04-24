@@ -17,7 +17,9 @@
       "Bash(find \"/c/Users/mpear/.nuget/packages/clowd.squirrel/2.11.1\" -name \"*.dll\" -path \"*net8*\")",
       "Bash(git init *)",
       "Bash(git remote *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(xargs grep *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\mpear\\.claude\\projects\\c--Apps-Lucas-Screentime"

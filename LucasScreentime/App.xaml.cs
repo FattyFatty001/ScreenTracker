@@ -8,8 +8,6 @@ using LucasScreentime.Storage;
 using LucasScreentime.Tracking;
 using LucasScreentime.UI;
 using LucasScreentime.Update;
-using Microsoft.Win32;
-using Squirrel;
 
 namespace LucasScreentime;
 
@@ -34,8 +32,7 @@ public partial class App : Application
             return;
         }
 
-        HandleSquirrelEvents();
-        RegisterStartup();
+        Program.RegisterStartup();
 
         var settings = AppSettings.Load();
         var repo = new ScreentimeRepository();
@@ -78,40 +75,5 @@ public partial class App : Application
             var win = new SettingsWindow(settings, emailService);
             win.Show();
         }
-    }
-
-    private static void HandleSquirrelEvents()
-    {
-        try
-        {
-            SquirrelAwareApp.HandleEvents(
-                onInitialInstall: (_, _) => RegisterStartup(),
-                onAppUninstall: (_, _) => RemoveStartup());
-        }
-        catch { /* not running under Squirrel */ }
-    }
-
-    private static void RegisterStartup()
-    {
-        try
-        {
-            using var key = Registry.CurrentUser.OpenSubKey(
-                @"Software\Microsoft\Windows\CurrentVersion\Run", writable: true);
-            var exe = Environment.ProcessPath
-                ?? System.Reflection.Assembly.GetExecutingAssembly().Location;
-            key?.SetValue("LucasScreentime", $"\"{exe}\"");
-        }
-        catch { }
-    }
-
-    private static void RemoveStartup()
-    {
-        try
-        {
-            using var key = Registry.CurrentUser.OpenSubKey(
-                @"Software\Microsoft\Windows\CurrentVersion\Run", writable: true);
-            key?.DeleteValue("LucasScreentime", throwOnMissingValue: false);
-        }
-        catch { }
     }
 }

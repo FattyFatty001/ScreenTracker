@@ -1,6 +1,6 @@
 using LucasScreentime.Settings;
-using Squirrel;
-using Squirrel.Sources;
+using Velopack;
+using Velopack.Sources;
 using Timer = System.Threading.Timer;
 
 namespace LucasScreentime.Update;
@@ -17,7 +17,6 @@ public sealed class AutoUpdater : IDisposable
     public void Start()
     {
         var interval = TimeSpan.FromMinutes(Math.Max(1, _settings.UpdateCheckIntervalMinutes));
-        // Delay first check by 30s to let the app finish starting up
         _timer = new Timer(CheckForUpdates, null, TimeSpan.FromSeconds(30), interval);
     }
 
@@ -27,11 +26,16 @@ public sealed class AutoUpdater : IDisposable
 
         try
         {
-            using var mgr = new UpdateManager(
-                new GithubSource($"https://github.com/{_settings.GitHubRepo}", null, false));
-            var result = await mgr.UpdateApp();
-            if (result != null)
-                UpdateManager.RestartApp();
+            var src = new GithubSource(
+                $"https://github.com/{_settings.GitHubRepo}", null, false);
+            var mgr = new UpdateManager(src);
+
+            var update = await mgr.CheckForUpdatesAsync();
+            if (update != null)
+            {
+                await mgr.DownloadUpdatesAsync(update);
+                mgr.ApplyUpdatesAndRestart(update);
+            }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
