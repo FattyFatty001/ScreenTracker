@@ -25,8 +25,24 @@ public partial class SettingsWindow : Window
         var versionText = v is null ? "" : $"v{v.Major}.{v.Minor}.{v.Build}";
 
         var mins = _updater?.MinutesUntilNextCheck;
-        var updateText = mins is null ? "" : $" · next update check in {mins}min";
+        var updateText = mins is null ? "" : $" · next check in {mins}min";
         TxtVersion.Text = versionText + updateText;
+
+        if (_updater?.LastCheckAt is DateTime checkedAt)
+        {
+            var ago = (int)Math.Round((DateTime.Now - checkedAt).TotalMinutes);
+            var agoText = ago < 1 ? "just now" : $"{ago}min ago";
+            if (_updater.LastCheckError is string err)
+            {
+                TxtUpdateStatus.Text = $"Last check {agoText} — error: {err}";
+                TxtUpdateStatus.Foreground = Brushes.Red;
+            }
+            else
+            {
+                TxtUpdateStatus.Text = $"Last check {agoText} — up to date";
+                TxtUpdateStatus.Foreground = Brushes.Gray;
+            }
+        }
     }
 
     private void LoadSettings()

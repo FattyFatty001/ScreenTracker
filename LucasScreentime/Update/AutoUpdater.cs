@@ -17,6 +17,9 @@ public sealed class AutoUpdater : IDisposable
     public int? MinutesUntilNextCheck => _nextCheckAt is null ? null
         : (int)Math.Max(0, Math.Ceiling((_nextCheckAt.Value - DateTime.Now).TotalMinutes));
 
+    public DateTime? LastCheckAt { get; private set; }
+    public string? LastCheckError { get; private set; }
+
     public AutoUpdater(AppSettings settings) => _settings = settings;
 
     public void Start()
@@ -39,6 +42,9 @@ public sealed class AutoUpdater : IDisposable
             var mgr = new UpdateManager(src);
 
             var update = await mgr.CheckForUpdatesAsync();
+            LastCheckAt = DateTime.Now;
+            LastCheckError = null;
+
             if (update != null)
             {
                 await mgr.DownloadUpdatesAsync(update);
@@ -47,6 +53,8 @@ public sealed class AutoUpdater : IDisposable
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
+            LastCheckAt = DateTime.Now;
+            LastCheckError = ex.Message;
             OnError?.Invoke(ex);
         }
     }
