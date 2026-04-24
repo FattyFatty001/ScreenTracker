@@ -22,8 +22,14 @@ public partial class SettingsWindow : Window
         _updater = updater;
         LoadSettings();
 
-        var v = Assembly.GetEntryAssembly()?.GetName().Version;
-        var versionText = v is null ? "" : $"v{v.Major}.{v.Minor}.{v.Build}";
+        string versionText;
+        if (_updater?.CurrentVersion is string cv)
+            versionText = $"v{cv}";
+        else
+        {
+            var v = Assembly.GetEntryAssembly()?.GetName().Version;
+            versionText = v is null ? "" : $"v{v.Major}.{v.Minor}.{v.Build}";
+        }
 
         var mins = _updater?.MinutesUntilNextCheck;
         var updateText = mins is null ? "" : $" · next check in {mins}min";

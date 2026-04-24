@@ -19,6 +19,7 @@ public sealed class AutoUpdater : IDisposable
 
     public DateTime? LastCheckAt { get; private set; }
     public string? LastCheckError { get; private set; }
+    public string? CurrentVersion { get; private set; }
 
     public AutoUpdater(AppSettings settings) => _settings = settings;
 
@@ -27,6 +28,15 @@ public sealed class AutoUpdater : IDisposable
         _interval = TimeSpan.FromMinutes(Math.Max(1, _settings.UpdateCheckIntervalMinutes));
         _nextCheckAt = DateTime.Now.AddSeconds(30);
         _timer = new Timer(CheckForUpdates, null, TimeSpan.FromSeconds(30), _interval);
+
+        try
+        {
+            var src = new GithubSource("https://github.com/placeholder/placeholder", null, false);
+            var mgr = new UpdateManager(src);
+            if (mgr.IsInstalled)
+                CurrentVersion = mgr.CurrentVersion?.ToString();
+        }
+        catch { /* not installed / dev run */ }
     }
 
     public async Task CheckNowAsync()
