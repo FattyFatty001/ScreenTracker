@@ -21,7 +21,10 @@
       "Bash(git commit -m ' *)",
       "Bash(xargs grep *)",
       "Bash(git tag *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(gh release *)",
+      "PowerShell(gh release list --repo FattyFatty001/ScreenTracker 2>&1)",
+      "PowerShell(vpk --version 2>&1)"
     ],
     "additionalDirectories": [
       "C:\\Users\\mpear\\.claude\\projects\\c--Apps-Lucas-Screentime"
