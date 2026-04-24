@@ -11,7 +11,7 @@ public class EmailService
 
     public EmailService(AppSettings settings) => _settings = settings;
 
-    public async Task SendAsync(string subject, string body)
+    public async Task SendAsync(string subject, string textBody, string htmlBody)
     {
         if (_settings.ToAddresses.Count == 0)
             throw new InvalidOperationException("No recipient email addresses configured.");
@@ -21,7 +21,13 @@ public class EmailService
         foreach (var addr in _settings.ToAddresses)
             message.To.Add(MailboxAddress.Parse(addr));
         message.Subject = subject;
-        message.Body = new TextPart("plain") { Text = body };
+
+        var alternative = new Multipart("alternative")
+        {
+            new TextPart("plain") { Text = textBody },
+            new TextPart("html")  { Text = htmlBody },
+        };
+        message.Body = alternative;
 
         using var client = new SmtpClient();
         await client.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, SecureSocketOptions.StartTls);
