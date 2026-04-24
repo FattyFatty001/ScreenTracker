@@ -3,6 +3,7 @@ using System.Windows;
 using Brushes = System.Windows.Media.Brushes;
 using LucasScreentime.Notifications;
 using LucasScreentime.Settings;
+using LucasScreentime.Update;
 
 namespace LucasScreentime.UI;
 
@@ -10,16 +11,22 @@ public partial class SettingsWindow : Window
 {
     private readonly AppSettings _settings;
     private readonly EmailService _email;
+    private readonly AutoUpdater? _updater;
 
-    public SettingsWindow(AppSettings settings, EmailService email)
+    public SettingsWindow(AppSettings settings, EmailService email, AutoUpdater? updater = null)
     {
         InitializeComponent();
         _settings = settings;
         _email = email;
+        _updater = updater;
         LoadSettings();
 
         var v = Assembly.GetEntryAssembly()?.GetName().Version;
-        TxtVersion.Text = v is null ? "" : $"v{v.Major}.{v.Minor}.{v.Build}";
+        var versionText = v is null ? "" : $"v{v.Major}.{v.Minor}.{v.Build}";
+
+        var mins = _updater?.MinutesUntilNextCheck;
+        var updateText = mins is null ? "" : $" · next update check in {mins}min";
+        TxtVersion.Text = versionText + updateText;
     }
 
     private void LoadSettings()

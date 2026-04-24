@@ -49,7 +49,7 @@ public partial class App : Application
 
         _trayIcon.SettingsRequested += () =>
         {
-            var win = new SettingsWindow(settings, emailService);
+            var win = new SettingsWindow(settings, emailService, _updater);
             win.Show();
             win.Activate();
         };
@@ -72,7 +72,7 @@ public partial class App : Application
 
         if (!settings.IsConfigured)
         {
-            var win = new SettingsWindow(settings, emailService);
+            var win = new SettingsWindow(settings, emailService, _updater);
             win.Show();
         }
     }
