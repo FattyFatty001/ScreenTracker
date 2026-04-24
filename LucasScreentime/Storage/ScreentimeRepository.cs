@@ -108,6 +108,54 @@ public class ScreentimeRepository
         return total;
     }
 
+    public int[] GetHourlyBreakdown()
+    {
+        var localNow = DateTime.Now;
+        var todayStartLocal = localNow.Date;
+        var todayStartUtc = todayStartLocal.ToUniversalTime();
+        var todayEndUtc = todayStartUtc.AddDays(1);
+
+        using var conn = OpenConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = """
+            SELECT start_utc, end_utc FROM sessions
+            WHERE start_utc < $dayEnd
+            AND (end_utc IS NULL OR end_utc > $dayStart)
+            """;
+        cmd.Parameters.AddWithValue("$dayStart", todayStartUtc.ToString("O"));
+        cmd.Parameters.AddWithValue("$dayEnd", todayEndUtc.ToString("O"));
+
+        var buckets = new double[24];
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var startUtc = DateTime.Parse(reader.GetString(0), null, System.Globalization.DateTimeStyles.RoundtripKind);
+            var endUtc = reader.IsDBNull(1)
+                ? DateTime.UtcNow
+                : DateTime.Parse(reader.GetString(1), null, System.Globalization.DateTimeStyles.RoundtripKind);
+
+            var startLocal = startUtc.ToLocalTime();
+            var endLocal = endUtc.ToLocalTime();
+
+            var clampedStart = startLocal < todayStartLocal ? todayStartLocal : startLocal;
+            var clampedEnd = endLocal > localNow ? localNow : endLocal;
+
+            if (clampedEnd <= clampedStart) continue;
+
+            var cursor = clampedStart;
+            while (cursor < clampedEnd)
+            {
+                int hour = cursor.Hour;
+                var hourEnd = cursor.Date.AddHours(hour + 1);
+                var segEnd = hourEnd < clampedEnd ? hourEnd : clampedEnd;
+                buckets[hour] += (segEnd - cursor).TotalMinutes;
+                cursor = segEnd;
+            }
+        }
+
+        return buckets.Select(m => (int)Math.Round(m)).ToArray();
+    }
+
     public bool HasSentNotificationToday()
     {
         var today = DateTime.Now.ToString("yyyy-MM-dd");
