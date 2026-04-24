@@ -62,7 +62,7 @@ public sealed class DailyReportJob : IDisposable
         }
     }
 
-    private static string BuildHtmlChart(int[] hourlyMinutes)
+    internal static string BuildHtmlChart(int[] hourlyMinutes)
     {
         const int chartMaxPx = 72;
         const int maxMinutes = 60;
@@ -79,7 +79,7 @@ public sealed class DailyReportJob : IDisposable
         return sb.ToString();
     }
 
-    private static string BuildHtml(string timeBig, string timeText, string dateText, int[] hourlyMinutes)
+    internal static string BuildHtml(string timeBig, string timeText, string dateText, int[] hourlyMinutes)
     {
         string bars = BuildHtmlChart(hourlyMinutes);
         return $"""
