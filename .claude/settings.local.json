@@ -3,7 +3,8 @@
     "allow": [
       "WebSearch",
       "WebFetch(domain:docs.velopack.io)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Read(//mnt/c/Apps/Lucas Screentime/LucasScreentime/**)"
     ]
   }
 }

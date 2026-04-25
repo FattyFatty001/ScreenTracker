@@ -7,7 +7,7 @@ public sealed class ScreentimeTracker : IDisposable
     private readonly ScreentimeRepository _repo;
     private readonly WindowsMessageSink _sink;
 
-    private bool _monitorOn = false;
+    private bool _monitorOn = true; // assume on at startup; first off event corrects if wrong
     private bool _locked = false;
     private bool _sleeping = false;
     private long? _currentSessionId;
