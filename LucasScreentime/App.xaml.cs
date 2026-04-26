@@ -72,6 +72,7 @@ public partial class App : Application
 
         _reportJob.OnError += _ => _trayIcon.SetError(true);
         _updater.OnError += _ => _trayIcon.SetError(true);
+        _logUploader.OnError += ex => { AppLogger.Log($"Log upload failed: {ex.Message}"); _trayIcon.SetError(true); };
 
         _reportJob.Start();
         _updater.Start();

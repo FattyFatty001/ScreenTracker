@@ -41,6 +41,7 @@ public sealed class GitHubLogUploader : IDisposable
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(content));
             var sha = await GetFileShaAsync();
             await PutFileAsync(encoded, sha);
+            AppLogger.Log("Log uploaded to GitHub");
         }
         catch (Exception ex)
         {
