@@ -1,3 +1,4 @@
+using LucasScreentime.Logging;
 using LucasScreentime.Settings;
 using LucasScreentime.Storage;
 using LucasScreentime.Tracking;
@@ -53,11 +54,12 @@ public sealed class DailyReportJob : IDisposable
             string htmlBody = BuildHtml(timeBig, timeText, dateText, hourlyMinutes);
 
             await _email.SendAsync("Lucas's Screen Time Today", plainBody, htmlBody);
-
             _repo.MarkNotificationSent();
+            AppLogger.Log($"Daily report sent: {timeText}");
         }
         catch (Exception ex)
         {
+            AppLogger.Log($"Daily report failed: {ex.Message}");
             OnError?.Invoke(ex);
         }
     }

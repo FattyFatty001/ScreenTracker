@@ -1,3 +1,4 @@
+using LucasScreentime.Logging;
 using LucasScreentime.Storage;
 
 namespace LucasScreentime.Tracking;
@@ -29,6 +30,7 @@ public sealed class ScreentimeTracker : IDisposable
     public void Initialize()
     {
         _repo.CloseOpenSessions(DateTime.UtcNow);
+        AppLogger.Log("Tracker initialized");
 
         _sink.MonitorStateChanged += OnMonitorStateChanged;
         _sink.SystemSleeping += OnSystemSleeping;
@@ -36,6 +38,9 @@ public sealed class ScreentimeTracker : IDisposable
         _sink.SessionLocked += OnSessionLocked;
         _sink.SessionUnlocked += OnSessionUnlocked;
         _sink.Initialize();
+
+        // Start tracking immediately — Windows only fires monitor state on *change*, not on startup
+        lock (_lock) { UpdateTracking(); }
     }
 
     private void OnMonitorStateChanged(int state)
@@ -43,6 +48,7 @@ public sealed class ScreentimeTracker : IDisposable
         lock (_lock)
         {
             _monitorOn = state != 0; // 0=off, 1=on, 2=dimmed (treat dimmed as on)
+            AppLogger.Log($"Monitor: {(state == 0 ? "off" : state == 1 ? "on" : "dimmed")}");
             UpdateTracking();
         }
     }
@@ -51,6 +57,7 @@ public sealed class ScreentimeTracker : IDisposable
     {
         lock (_lock)
         {
+            AppLogger.Log("System sleeping");
             _sleeping = true;
             UpdateTracking();
         }
@@ -60,6 +67,7 @@ public sealed class ScreentimeTracker : IDisposable
     {
         lock (_lock)
         {
+            AppLogger.Log("System resumed");
             _sleeping = false;
             // Wait for monitor-on signal before resuming — don't start tracking here
         }
@@ -69,6 +77,7 @@ public sealed class ScreentimeTracker : IDisposable
     {
         lock (_lock)
         {
+            AppLogger.Log("Screen locked");
             _locked = true;
             UpdateTracking();
         }
@@ -78,6 +87,7 @@ public sealed class ScreentimeTracker : IDisposable
     {
         lock (_lock)
         {
+            AppLogger.Log("Screen unlocked");
             _locked = false;
             // Wait for monitor-on signal — don't start tracking here
         }
@@ -99,6 +109,7 @@ public sealed class ScreentimeTracker : IDisposable
     private void StartSession()
     {
         _currentSessionId = _repo.StartSession(DateTime.UtcNow);
+        AppLogger.Log("Session started");
     }
 
     private void EndSession()
@@ -107,6 +118,7 @@ public sealed class ScreentimeTracker : IDisposable
         {
             _repo.EndSession(_currentSessionId.Value, DateTime.UtcNow);
             _currentSessionId = null;
+            AppLogger.Log($"Session ended — today total: {_repo.GetTodayTotal():h\\:mm}");
         }
     }
 
@@ -115,6 +127,7 @@ public sealed class ScreentimeTracker : IDisposable
     public void Dispose()
     {
         lock (_lock) { EndSession(); }
+        AppLogger.Log("Tracker disposed");
         _sink.Dispose();
     }
 }

@@ -21,7 +21,32 @@ public class AppSettings
     public string NotifyWindowEnd { get; set; } = "21:00";
     public int UpdateCheckIntervalMinutes { get; set; } = 15;
     public string GitHubRepo { get; set; } = "FattyFatty001/ScreenTracker";
+    public string GitHubPatEncrypted { get; set; } = "";
+    public int LogUploadIntervalMinutes { get; set; } = 30;
     public bool IsConfigured { get; set; } = false;
+
+    [JsonIgnore]
+    public string GitHubPat
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(GitHubPatEncrypted)) return "";
+            try
+            {
+                var bytes = ProtectedData.Unprotect(
+                    Convert.FromBase64String(GitHubPatEncrypted), null, DataProtectionScope.CurrentUser);
+                return Encoding.UTF8.GetString(bytes);
+            }
+            catch { return ""; }
+        }
+        set
+        {
+            if (string.IsNullOrEmpty(value)) { GitHubPatEncrypted = ""; return; }
+            var bytes = ProtectedData.Protect(
+                Encoding.UTF8.GetBytes(value), null, DataProtectionScope.CurrentUser);
+            GitHubPatEncrypted = Convert.ToBase64String(bytes);
+        }
+    }
 
     [JsonIgnore]
     public string SmtpPassword

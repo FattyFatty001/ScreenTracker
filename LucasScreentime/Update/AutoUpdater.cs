@@ -1,3 +1,4 @@
+using LucasScreentime.Logging;
 using LucasScreentime.Settings;
 using Velopack;
 using Velopack.Sources;
@@ -56,7 +57,9 @@ public sealed class AutoUpdater : IDisposable
 
         if (update != null)
         {
+            AppLogger.Log($"Update found: {update.TargetFullRelease.Version} — downloading");
             await mgr.DownloadUpdatesAsync(update);
+            AppLogger.Log("Update downloaded, restarting");
             mgr.ApplyUpdatesAndRestart(update);
         }
     }
@@ -71,6 +74,7 @@ public sealed class AutoUpdater : IDisposable
         {
             LastCheckAt = DateTime.Now;
             LastCheckError = ex.Message;
+            AppLogger.Log($"Update check failed: {ex.Message}");
             OnError?.Invoke(ex);
         }
     }

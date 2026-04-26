@@ -2,6 +2,7 @@ using System.Threading;
 using System.Windows;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
+using LucasScreentime.Logging;
 using LucasScreentime.Notifications;
 using LucasScreentime.Settings;
 using LucasScreentime.Storage;
@@ -18,6 +19,7 @@ public partial class App : Application
     private ScreentimeTracker? _tracker;
     private DailyReportJob? _reportJob;
     private AutoUpdater? _updater;
+    private GitHubLogUploader? _logUploader;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -35,6 +37,8 @@ public partial class App : Application
         Program.RegisterStartup();
 
         var settings = AppSettings.Load();
+        AppLogger.Log("App started");
+
         var repo = new ScreentimeRepository();
 
         _tracker = new ScreentimeTracker(repo);
@@ -43,6 +47,7 @@ public partial class App : Application
         var emailService = new EmailService(settings);
         _reportJob = new DailyReportJob(settings, repo, emailService, _tracker);
         _updater = new AutoUpdater(settings);
+        _logUploader = new GitHubLogUploader(settings);
 
         System.Windows.Forms.Application.EnableVisualStyles();
         _trayIcon = new TrayIcon(_tracker);
@@ -60,6 +65,7 @@ public partial class App : Application
             _tracker.Dispose();
             _reportJob.Dispose();
             _updater.Dispose();
+            _logUploader.Dispose();
             _mutex?.ReleaseMutex();
             Shutdown();
         };
@@ -69,6 +75,7 @@ public partial class App : Application
 
         _reportJob.Start();
         _updater.Start();
+        _logUploader.Start(settings.LogUploadIntervalMinutes);
 
         if (!settings.IsConfigured)
         {

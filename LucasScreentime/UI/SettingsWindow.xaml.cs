@@ -64,6 +64,7 @@ public partial class SettingsWindow : Window
         TxtNotifyEnd.Text = _settings.NotifyWindowEnd;
         TxtGitHubRepo.Text = _settings.GitHubRepo;
         TxtUpdateInterval.Text = _settings.UpdateCheckIntervalMinutes.ToString();
+        PbGitHubPat.Password = _settings.GitHubPat;
     }
 
     private bool SaveSettings()
@@ -96,6 +97,8 @@ public partial class SettingsWindow : Window
         _settings.NotifyWindowEnd = TxtNotifyEnd.Text.Trim();
         _settings.GitHubRepo = TxtGitHubRepo.Text.Trim();
         _settings.UpdateCheckIntervalMinutes = interval;
+        if (!string.IsNullOrEmpty(PbGitHubPat.Password))
+            _settings.GitHubPat = PbGitHubPat.Password;
         _settings.IsConfigured = _settings.ToAddresses.Count > 0
             && !string.IsNullOrEmpty(_settings.SmtpUsername)
             && !string.IsNullOrEmpty(_settings.SmtpPasswordEncrypted);
