@@ -4,7 +4,15 @@
       "WebSearch",
       "WebFetch(domain:docs.velopack.io)",
       "WebFetch(domain:github.com)",
-      "Read(//mnt/c/Apps/Lucas Screentime/LucasScreentime/**)"
+      "Read(//mnt/c/Apps/Lucas Screentime/LucasScreentime/**)",
+      "Bash(gh api *)",
+      "Bash(where gh *)",
+      "Read(//c/Program Files/**)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git pull *)",
+      "Bash(git commit -m ' *)",
+      "Bash(Select-Object -First 1)"
     ]
   }
 }
