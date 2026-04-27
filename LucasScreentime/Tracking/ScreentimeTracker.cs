@@ -69,7 +69,7 @@ public sealed class ScreentimeTracker : IDisposable
         {
             AppLogger.Log("System resumed");
             _sleeping = false;
-            // Wait for monitor-on signal before resuming — don't start tracking here
+            UpdateTracking();
         }
     }
 
@@ -89,7 +89,7 @@ public sealed class ScreentimeTracker : IDisposable
         {
             AppLogger.Log("Screen unlocked");
             _locked = false;
-            // Wait for monitor-on signal — don't start tracking here
+            UpdateTracking();
         }
     }
 
