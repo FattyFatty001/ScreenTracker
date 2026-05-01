@@ -11,7 +11,6 @@ public sealed class DailyReportJob : IDisposable
     private readonly AppSettings _settings;
     private readonly ScreentimeRepository _repo;
     private readonly EmailService _email;
-    private readonly ScreentimeTracker _tracker;
     private Timer? _timer;
 
     public event Action<Exception>? OnError;
@@ -21,7 +20,6 @@ public sealed class DailyReportJob : IDisposable
         _settings = settings;
         _repo = repo;
         _email = email;
-        _tracker = tracker;
     }
 
     public void Start()
@@ -35,33 +33,62 @@ public sealed class DailyReportJob : IDisposable
         {
             if (!_settings.IsConfigured || string.IsNullOrEmpty(_settings.SmtpPassword)) return;
 
-            var now = DateTime.Now.TimeOfDay;
+            var nowLocal = DateTime.Now;
+            var now = nowLocal.TimeOfDay;
+
+            // Only send during the notification window
             if (now < _settings.NotifyStart || now > _settings.NotifyEnd) return;
-            if (_repo.HasSentNotificationToday()) return;
 
-            var total = _tracker.GetTodayTotal();
-            var hours = (int)total.TotalHours;
-            var minutes = total.Minutes;
+            // 1. Send today's notification if not yet sent
+            if (!_repo.HasSentNotificationToday())
+            {
+                await SendReportForDate(nowLocal, nowLocal);
+                _repo.MarkNotificationSent();
+                AppLogger.Log($"Daily report sent: {nowLocal:yyyy-MM-dd}");
+                return;
+            }
 
-            string timeText = hours > 0
-                ? $"{hours} hour{(hours != 1 ? "s" : "")} and {minutes} minute{(minutes != 1 ? "s" : "")}"
-                : $"{minutes} minute{(minutes != 1 ? "s" : "")}";
-
-            string timeBig = hours > 0 ? $"{hours}h {minutes}m" : $"{minutes}m";
-            string dateText = DateTime.Now.ToString("dddd, MMMM d");
-            string plainBody = $"Lucas had {timeText} of screen time today ({dateText}).";
-            var hourlyMinutes = _repo.GetHourlyBreakdown();
-            string htmlBody = BuildHtml(timeBig, timeText, dateText, hourlyMinutes);
-
-            await _email.SendAsync("Lucas's Screen Time Today", plainBody, htmlBody);
-            _repo.MarkNotificationSent();
-            AppLogger.Log($"Daily report sent: {timeText}");
+            // 2. Send catch-up notifications for any missed days
+            var missedDates = _repo.GetMissedNotificationDates();
+            foreach (var dateStr in missedDates)
+            {
+                var date = DateTime.ParseExact(dateStr, "yyyy-MM-dd", null);
+                await SendReportForDate(date, nowLocal);
+                _repo.MarkNotificationSentForDate(dateStr);
+                AppLogger.Log($"Catch-up report sent for {dateStr}");
+                return; // Only send one per tick to avoid flooding
+            }
         }
         catch (Exception ex)
         {
             AppLogger.Log($"Daily report failed: {ex.Message}");
             OnError?.Invoke(ex);
         }
+    }
+
+    private async Task SendReportForDate(DateTime reportDate, DateTime nowLocal)
+    {
+        var total = _repo.GetTotalForDate(reportDate);
+        var hours = (int)total.TotalHours;
+        var minutes = total.Minutes;
+
+        string timeText = hours > 0
+            ? $"{hours} hour{(hours != 1 ? "s" : "")} and {minutes} minute{(minutes != 1 ? "s" : "")}"
+            : $"{minutes} minute{(minutes != 1 ? "s" : "")}";
+
+        string timeBig = hours > 0 ? $"{hours}h {minutes}m" : $"{minutes}m";
+
+        bool isToday = reportDate.Date == nowLocal.Date;
+        string dateText = reportDate.ToString("dddd, MMMM d");
+        string subject = isToday
+            ? "Lucas's Screen Time Today"
+            : $"Lucas's Screen Time — {dateText}";
+        string ofTodayText = isToday ? "of screen time today" : $"of screen time on {dateText}";
+        string plainBody = $"Lucas had {timeText} {ofTodayText}.";
+        var hourlyMinutes = _repo.GetHourlyBreakdownForDate(reportDate);
+        string htmlBody = BuildHtml(timeBig, timeText, dateText, hourlyMinutes, ofTodayText);
+
+        await _email.SendAsync(subject, plainBody, htmlBody);
     }
 
     internal static string BuildHtmlChart(int[] hourlyMinutes)
@@ -81,9 +108,10 @@ public sealed class DailyReportJob : IDisposable
         return sb.ToString();
     }
 
-    internal static string BuildHtml(string timeBig, string timeText, string dateText, int[] hourlyMinutes)
+    internal static string BuildHtml(string timeBig, string timeText, string dateText, int[] hourlyMinutes, string? ofTodayText = null)
     {
         string bars = BuildHtmlChart(hourlyMinutes);
+        string subtitle = ofTodayText ?? "of screen time today";
         return $"""
             <!DOCTYPE html>
             <html lang="en">
@@ -96,7 +124,7 @@ public sealed class DailyReportJob : IDisposable
                       <td align="center" style="padding:36px 32px 0;">
                         <p style="margin:0 0 6px;font-size:12px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:1.2px;">Screen Time</p>
                         <p style="margin:0 0 4px;font-size:56px;font-weight:700;color:#1c1c1e;line-height:1;">{timeBig}</p>
-                        <p style="margin:0;font-size:17px;color:#8e8e93;">of screen time today</p>
+                        <p style="margin:0;font-size:17px;color:#8e8e93;">{subtitle}</p>
                       </td>
                     </tr>
                     <tr>

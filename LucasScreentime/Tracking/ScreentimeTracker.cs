@@ -124,6 +124,8 @@ public sealed class ScreentimeTracker : IDisposable
 
     public TimeSpan GetTodayTotal() => _repo.GetTodayTotal();
 
+    public TimeSpan GetTotalForDate(DateTime localDate) => _repo.GetTotalForDate(localDate);
+
     public void Dispose()
     {
         lock (_lock) { EndSession(); }
