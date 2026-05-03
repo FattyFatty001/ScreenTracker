@@ -1,5 +1,7 @@
 name: Build
 
+run-name: Build 1.0.${{ github.run_number }}
+
 on:
   push:
     branches: [main, master]
