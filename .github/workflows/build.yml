@@ -12,14 +12,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
+
+      - name: Get commit count
+        id: version
+        shell: bash
+        run: echo "REV=$(git rev-list --count HEAD)" >> $GITHUB_OUTPUT
 
       - name: Restore dependencies
         run: dotnet restore LucasScreentime/LucasScreentime.csproj
 
       - name: Build
-        run: dotnet build LucasScreentime/LucasScreentime.csproj -c Release --no-restore
+        run: dotnet build LucasScreentime/LucasScreentime.csproj -c Release --no-restore -p:Version=1.0.${{ steps.version.outputs.REV }}

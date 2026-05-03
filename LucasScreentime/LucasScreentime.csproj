@@ -10,6 +10,8 @@
     <RootNamespace>LucasScreentime</RootNamespace>
     <AssemblyName>LucasScreentime</AssemblyName>
     <StartupObject>LucasScreentime.Program</StartupObject>
+    <!-- Default version; CI overrides with git commit count -->
+    <VersionPrefix>1.0</VersionPrefix>
   </PropertyGroup>
 
   <!-- Embed build date -->
