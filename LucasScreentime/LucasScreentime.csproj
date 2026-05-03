@@ -12,6 +12,11 @@
     <StartupObject>LucasScreentime.Program</StartupObject>
   </PropertyGroup>
 
+  <!-- Embed build date -->
+  <ItemGroup>
+    <AssemblyMetadata Include="BuildDate" Value="$([System.DateTime]::UtcNow.ToString(yyyy-MM-dd HH:mm))" />
+  </ItemGroup>
+
   <!-- Change App.xaml to Page so our custom Program.cs owns Main -->
   <ItemGroup>
     <ApplicationDefinition Remove="App.xaml" />

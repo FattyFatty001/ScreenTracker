@@ -31,9 +31,15 @@ public partial class SettingsWindow : Window
             versionText = v is null ? "" : $"v{v.Major}.{v.Minor}.{v.Build}";
         }
 
+        // Read build date from assembly metadata
+        var buildDate = Assembly.GetEntryAssembly()
+            ?.GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(a => a.Key == "BuildDate")?.Value;
+        var buildDateText = buildDate is null ? "" : $"  ·  built {buildDate}";
+
         var mins = _updater?.MinutesUntilNextCheck;
         var updateText = mins is null ? "" : $" · next check in {mins}min";
-        TxtVersion.Text = versionText + updateText;
+        TxtVersion.Text = versionText + buildDateText + updateText;
 
         if (_updater?.LastCheckAt is DateTime checkedAt)
         {
