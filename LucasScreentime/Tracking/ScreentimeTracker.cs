@@ -101,24 +101,32 @@ public sealed class ScreentimeTracker : IDisposable
         if (shouldTrack && !hasSession)
             StartSession();
         else if (!shouldTrack && hasSession)
-            EndSession();
+        {
+            string reason = !_monitorOn ? "monitor_off"
+                          : _locked    ? "locked"
+                          :               "sleeping";
+            EndSession(reason);
+        }
 
         StateChanged?.Invoke();
     }
 
     private void StartSession()
     {
-        _currentSessionId = _repo.StartSession(DateTime.UtcNow);
-        AppLogger.Log("Session started");
+        var now = DateTime.UtcNow;
+        _currentSessionId = _repo.StartSession(now);
+        AppLogger.Log($"Timer START | Session #{_currentSessionId.Value} | UTC: {now:O}");
     }
 
-    private void EndSession()
+    private void EndSession(string reason)
     {
         if (_currentSessionId.HasValue)
         {
-            _repo.EndSession(_currentSessionId.Value, DateTime.UtcNow);
+            var now = DateTime.UtcNow;
+            var sessionId = _currentSessionId.Value;
+            _repo.EndSession(sessionId, now);
             _currentSessionId = null;
-            AppLogger.Log($"Session ended — today total: {_repo.GetTodayTotal():h\\:mm}");
+            AppLogger.Log($"Timer END   | Session #{sessionId} | Reason: {reason} | Today: {_repo.GetTodayTotal():h\\:mm}");
         }
     }
 
@@ -128,7 +136,11 @@ public sealed class ScreentimeTracker : IDisposable
 
     public void Dispose()
     {
-        lock (_lock) { EndSession(); }
+        lock (_lock)
+        {
+            if (_currentSessionId.HasValue)
+                EndSession("disposing");
+        }
         AppLogger.Log("Tracker disposed");
         _sink.Dispose();
     }

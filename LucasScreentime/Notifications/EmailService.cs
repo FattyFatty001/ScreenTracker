@@ -11,7 +11,8 @@ public class EmailService
 
     public EmailService(AppSettings settings) => _settings = settings;
 
-    public async Task SendAsync(string subject, string textBody, string htmlBody)
+    public async Task SendAsync(string subject, string textBody, string htmlBody,
+        List<string>? attachmentPaths = null)
     {
         if (_settings.ToAddresses.Count == 0)
             throw new InvalidOperationException("No recipient email addresses configured.");
@@ -22,12 +23,37 @@ public class EmailService
             message.To.Add(MailboxAddress.Parse(addr));
         message.Subject = subject;
 
+        // Build the rich body (text + html alternatives)
         var alternative = new Multipart("alternative")
         {
             new TextPart("plain") { Text = textBody },
             new TextPart("html")  { Text = htmlBody },
         };
-        message.Body = alternative;
+
+        // Attach log files if any
+        if (attachmentPaths != null && attachmentPaths.Count > 0)
+        {
+            var mixed = new Multipart("mixed") { alternative };
+            foreach (var path in attachmentPaths)
+            {
+                if (File.Exists(path))
+                {
+                    var attachment = new MimePart("text", "plain")
+                    {
+                        Content = new MimeContent(File.OpenRead(path), ContentEncoding.Default),
+                        ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                        ContentTransferEncoding = ContentEncoding.Base64,
+                        FileName = Path.GetFileName(path)
+                    };
+                    mixed.Add(attachment);
+                }
+            }
+            message.Body = mixed;
+        }
+        else
+        {
+            message.Body = alternative;
+        }
 
         using var client = new SmtpClient();
         await client.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, SecureSocketOptions.StartTls);

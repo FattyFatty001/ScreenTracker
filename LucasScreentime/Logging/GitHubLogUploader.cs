@@ -13,7 +13,6 @@ public sealed class GitHubLogUploader : IDisposable
     private readonly AppSettings _settings;
     private Timer? _timer;
     private static readonly HttpClient _http = new();
-    private const string RepoLogPath = "logs/screentime.log";
 
     public event Action<Exception>? OnError;
 
@@ -22,7 +21,6 @@ public sealed class GitHubLogUploader : IDisposable
     public void Start(int intervalMinutes)
     {
         var interval = TimeSpan.FromMinutes(Math.Max(1, intervalMinutes));
-        // First upload 30s after start, then on interval
         _timer = new Timer(async _ => await UploadAsync(), null, TimeSpan.FromSeconds(30), interval);
     }
 
@@ -34,14 +32,16 @@ public sealed class GitHubLogUploader : IDisposable
 
         try
         {
-            var content = File.Exists(AppLogger.LogFilePath)
-                ? File.ReadAllText(AppLogger.LogFilePath)
+            var logPath = AppLogger.LogFilePath;
+            var content = File.Exists(logPath)
+                ? File.ReadAllText(logPath)
                 : "(no log entries yet)";
 
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(content));
-            var sha = await GetFileShaAsync();
-            await PutFileAsync(encoded, sha);
-            AppLogger.Log("Log uploaded to GitHub");
+            var repoPath = $"logs/{DateTime.Now:yyyy-MM-dd}.log";
+            var sha = await GetFileShaAsync(repoPath);
+            await PutFileAsync(repoPath, encoded, sha);
+            AppLogger.Log($"Log uploaded to GitHub: {repoPath}");
         }
         catch (Exception ex)
         {
@@ -49,9 +49,9 @@ public sealed class GitHubLogUploader : IDisposable
         }
     }
 
-    private async Task<string?> GetFileShaAsync()
+    private async Task<string?> GetFileShaAsync(string path)
     {
-        var req = BuildRequest(HttpMethod.Get, RepoLogPath);
+        var req = BuildRequest(HttpMethod.Get, path);
         var resp = await _http.SendAsync(req);
         if (!resp.IsSuccessStatusCode) return null;
 
@@ -59,7 +59,7 @@ public sealed class GitHubLogUploader : IDisposable
         return doc.RootElement.GetProperty("sha").GetString();
     }
 
-    private async Task PutFileAsync(string base64Content, string? sha)
+    private async Task PutFileAsync(string path, string base64Content, string? sha)
     {
         var body = new Dictionary<string, object?>
         {
@@ -68,7 +68,7 @@ public sealed class GitHubLogUploader : IDisposable
         };
         if (sha != null) body["sha"] = sha;
 
-        var req = BuildRequest(HttpMethod.Put, RepoLogPath);
+        var req = BuildRequest(HttpMethod.Put, path);
         req.Content = new StringContent(
             JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
         var resp = await _http.SendAsync(req);

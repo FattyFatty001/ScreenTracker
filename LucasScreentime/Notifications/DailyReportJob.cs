@@ -85,10 +85,25 @@ public sealed class DailyReportJob : IDisposable
             : $"Lucas's Screen Time — {dateText}";
         string ofTodayText = isToday ? "of screen time today" : $"of screen time on {dateText}";
         string plainBody = $"Lucas had {timeText} {ofTodayText}.";
-        var hourlyMinutes = _repo.GetHourlyBreakdownForDate(reportDate);
-        string htmlBody = BuildHtml(timeBig, timeText, dateText, hourlyMinutes, ofTodayText);
 
-        await _email.SendAsync(subject, plainBody, htmlBody);
+        // Build log link for GitHub (if configured)
+        string? logLink = null;
+        if (!string.IsNullOrWhiteSpace(_settings.GitHubRepo) &&
+            !string.IsNullOrWhiteSpace(_settings.GitHubPat))
+        {
+            logLink = $"https://github.com/{_settings.GitHubRepo}/blob/main/logs/{reportDate:yyyy-MM-dd}.log";
+        }
+
+        var hourlyMinutes = _repo.GetHourlyBreakdownForDate(reportDate);
+        string htmlBody = BuildHtml(timeBig, timeText, dateText, hourlyMinutes, ofTodayText, logLink, reportDate);
+
+        // Attach today's log file
+        var attachments = new List<string>();
+        var logPath = AppLogger.GetLogPathForDate(reportDate);
+        if (File.Exists(logPath))
+            attachments.Add(logPath);
+
+        await _email.SendAsync(subject, plainBody, htmlBody, attachments);
     }
 
     internal static string BuildHtmlChart(int[] hourlyMinutes)
@@ -108,10 +123,34 @@ public sealed class DailyReportJob : IDisposable
         return sb.ToString();
     }
 
-    internal static string BuildHtml(string timeBig, string timeText, string dateText, int[] hourlyMinutes, string? ofTodayText = null)
+    internal static string BuildHtml(string timeBig, string timeText, string dateText,
+        int[] hourlyMinutes, string? ofTodayText = null, string? logLink = null, DateTime? reportDate = null)
     {
         string bars = BuildHtmlChart(hourlyMinutes);
         string subtitle = ofTodayText ?? "of screen time today";
+
+        // Build a footer row with the log link if available
+        string logFooter = "";
+        if (!string.IsNullOrWhiteSpace(logLink))
+        {
+            string linkLabel = reportDate.HasValue
+                ? $"View log for {reportDate.Value:yyyy-MM-dd}"
+                : "View daily log";
+            logFooter = $"""
+                        <tr>
+                          <td style="padding:0 32px 24px;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                              <tr>
+                                <td align="center">
+                                  <a href="{logLink}" style="font-size:13px;color:#007AFF;text-decoration:none;">{linkLabel}</a>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                        """;
+        }
+
         return $"""
             <!DOCTYPE html>
             <html lang="en">
@@ -161,6 +200,7 @@ public sealed class DailyReportJob : IDisposable
                         </table>
                       </td>
                     </tr>
+                    {logFooter}
                   </table>
                 </td></tr>
               </table>
