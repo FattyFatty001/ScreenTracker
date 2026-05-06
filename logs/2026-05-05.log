@@ -55,3 +55,24 @@
 2026-05-05 19:57:35 | Screen unlocked
 2026-05-05 19:57:35 | Timer START | Session #64 | UTC: 2026-05-06T02:57:35.3688861Z
 2026-05-05 19:57:35 | Screen unlocked
+2026-05-05 19:58:48 | Log uploaded to GitHub: logs/2026-05-05.log
+2026-05-05 20:02:25 | Monitor: dimmed
+2026-05-05 20:02:40 | Monitor: off
+2026-05-05 20:02:40 | Timer END   | Session #64 | Reason: monitor_off | Today: 18:28
+2026-05-05 20:09:29 | Monitor: on
+2026-05-05 20:09:29 | Timer START | Session #65 | UTC: 2026-05-06T03:09:29.8226255Z
+2026-05-05 20:24:47 | Screen locked
+2026-05-05 20:24:47 | Timer END   | Session #65 | Reason: locked | Today: 18:43
+2026-05-05 20:24:47 | Monitor: off
+2026-05-05 20:24:47 | Screen locked
+2026-05-05 21:07:49 | Monitor: on
+2026-05-05 21:07:58 | Screen unlocked
+2026-05-05 21:07:58 | Timer START | Session #66 | UTC: 2026-05-06T04:07:58.1858984Z
+2026-05-05 21:07:58 | Screen unlocked
+2026-05-05 21:08:26 | Update found: 1.0.15 — downloading
+2026-05-05 21:08:29 | Update downloaded, restarting
+2026-05-05 21:08:36 | App started
+2026-05-05 21:08:36 | Tracker initialized
+2026-05-05 21:08:37 | Timer START | Session #67 | UTC: 2026-05-06T04:08:37.8058848Z
+2026-05-05 21:08:37 | Monitor: on
+2026-05-05 21:08:39 | Catch-up report sent for 2026-05-04
