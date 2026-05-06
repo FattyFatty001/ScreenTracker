@@ -62,11 +62,76 @@ public class ScreentimeRepository
 
     public void CloseOpenSessions(DateTime endUtc)
     {
+        // When the app restarts after being down (crash, reboot, etc.), any
+        // session with end_utc=NULL has been orphaned.  If that session started
+        // on a *previous* day we must cap its end to midnight so that
+        // GetTodayTotal() does not count the whole "midnight → now" span as
+        // today's screen time.
+        CloseOrphanedSessionsBeforeToday(endUtc);
+    }
+
+    /// <summary>
+    /// Caps orphaned sessions from before today at midnight, and closes any
+    /// remaining open sessions at <paramref name="nowUtc"/>.
+    /// Call this on app startup AND when the first session of a new day begins.
+    /// </summary>
+    public void CloseOrphanedSessionsBeforeToday(DateTime nowUtc)
+    {
+        var todayStartUtc = DateTime.Now.Date.ToUniversalTime();
+
         using var conn = OpenConnection();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = "UPDATE sessions SET end_utc = $end WHERE end_utc IS NULL";
-        cmd.Parameters.AddWithValue("$end", endUtc.ToString("O"));
-        cmd.ExecuteNonQuery();
+
+        // 1. Orphaned sessions that started before today → cap end_utc at midnight today
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = @"
+                UPDATE sessions
+                   SET end_utc = $midnight
+                 WHERE end_utc IS NULL
+                   AND start_utc < $midnight";
+            cmd.Parameters.AddWithValue("$midnight", todayStartUtc.ToString("O"));
+            cmd.ExecuteNonQuery();
+        }
+
+        // 2. Orphaned sessions that started today → close at current time
+        //    (we can't know exactly when the app stopped, but the error is at
+        //     most a partial day instead of multiple days)
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = @"
+                UPDATE sessions
+                   SET end_utc = $now
+                 WHERE end_utc IS NULL";
+            cmd.Parameters.AddWithValue("$now", nowUtc.ToString("O"));
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    /// <summary>
+    /// Closes any session (open or closed) that spans across midnight into today,
+    /// splitting it at midnight so each day's portion is cleanly separated.
+    /// Only needed for sessions that weren't properly ended at the day boundary.
+    /// </summary>
+    public void SplitSessionsAtMidnight(DateTime todayLocalDate)
+    {
+        var midnightUtc = todayLocalDate.Date.ToUniversalTime();
+
+        using var conn = OpenConnection();
+
+        // Find sessions whose end_utc crosses into today (started before midnight, ends after midnight)
+        // and have end_utc IS NOT NULL.  Cap their end_utc at midnight so the portion
+        // after midnight doesn't contaminate today's total.
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = @"
+                UPDATE sessions
+                   SET end_utc = $midnight
+                 WHERE start_utc < $midnight
+                   AND end_utc IS NOT NULL
+                   AND end_utc > $midnight";
+            cmd.Parameters.AddWithValue("$midnight", midnightUtc.ToString("O"));
+            cmd.ExecuteNonQuery();
+        }
     }
 
     public TimeSpan GetTodayTotal()

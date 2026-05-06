@@ -12,6 +12,7 @@ public sealed class ScreentimeTracker : IDisposable
     private bool _locked = false;
     private bool _sleeping = false;
     private long? _currentSessionId;
+    private DateTime _lastSessionLocalDate = DateTime.Now.Date; // track day changes for midnight reset
     private readonly object _lock = new();
 
     public event Action? StateChanged;
@@ -29,7 +30,13 @@ public sealed class ScreentimeTracker : IDisposable
 
     public void Initialize()
     {
+        // Clean up any sessions that were orphaned by a previous crash
         _repo.CloseOpenSessions(DateTime.UtcNow);
+
+        // Also fix any already-closed sessions that span across midnight into
+        // today (e.g., from older buggy versions of CloseOpenSessions)
+        _repo.SplitSessionsAtMidnight(DateTime.Now.Date);
+
         AppLogger.Log("Tracker initialized");
 
         _sink.MonitorStateChanged += OnMonitorStateChanged;
@@ -114,6 +121,18 @@ public sealed class ScreentimeTracker : IDisposable
     private void StartSession()
     {
         var now = DateTime.UtcNow;
+
+        // If we've crossed into a new day since the last session, ensure no
+        // orphaned or multi-day sessions contaminate today's total
+        var todayLocal = DateTime.Now.Date;
+        if (todayLocal > _lastSessionLocalDate)
+        {
+            _repo.CloseOrphanedSessionsBeforeToday(now);
+            _repo.SplitSessionsAtMidnight(todayLocal);
+            _lastSessionLocalDate = todayLocal;
+            AppLogger.Log("New day boundary — reset counters");
+        }
+
         _currentSessionId = _repo.StartSession(now);
         AppLogger.Log($"Timer START | Session #{_currentSessionId.Value} | UTC: {now:O}");
     }
