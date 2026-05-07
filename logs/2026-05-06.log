@@ -42,3 +42,12 @@
 2026-05-06 20:22:29 | Screen unlocked
 2026-05-06 20:22:29 | Timer START | Session #72 | UTC: 2026-05-07T03:22:29.2018359Z
 2026-05-06 20:22:29 | Screen unlocked
+2026-05-06 20:33:02 | Log uploaded to GitHub: logs/2026-05-06.log
+2026-05-06 20:37:47 | Screen locked
+2026-05-06 20:37:47 | Timer END   | Session #72 | Reason: locked | Today: 2:33
+2026-05-06 20:37:47 | Screen locked
+2026-05-06 20:37:48 | Monitor: off
+2026-05-06 21:11:49 | Monitor: on
+2026-05-06 21:17:39 | Monitor: dimmed
+2026-05-06 21:17:54 | Monitor: off
+2026-05-06 21:17:54 | Timer END   | Session #73 | Reason: monitor_off | Today: 2:38
