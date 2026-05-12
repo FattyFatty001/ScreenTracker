@@ -3,3 +3,9 @@
 2026-05-12 15:46:38 | New day boundary — reset counters
 2026-05-12 15:46:38 | Timer START | Session #97 | UTC: 2026-05-12T22:46:38.2396687Z
 2026-05-12 15:46:38 | Screen unlocked
+2026-05-12 16:04:37 | Log uploaded to GitHub: logs/2026-05-12.log
+2026-05-12 16:07:08 | Monitor: dimmed
+2026-05-12 16:07:23 | Monitor: off
+2026-05-12 16:07:23 | Timer END   | Session #97 | Reason: monitor_off | Today: 0:20
+2026-05-12 16:14:33 | Monitor: on
+2026-05-12 16:14:33 | Timer START | Session #98 | UTC: 2026-05-12T23:14:33.8505865Z
