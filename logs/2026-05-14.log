@@ -14,3 +14,9 @@
 2026-05-14 18:21:21 | Screen unlocked
 2026-05-14 18:21:21 | Timer START | Session #106 | UTC: 2026-05-15T01:21:21.8188946Z
 2026-05-14 18:21:21 | Screen unlocked
+2026-05-14 18:21:44 | Log uploaded to GitHub: logs/2026-05-14.log
+2026-05-14 18:26:52 | Monitor: dimmed
+2026-05-14 18:27:07 | Monitor: off
+2026-05-14 18:27:07 | Timer END   | Session #106 | Reason: monitor_off | Today: 0:37
+2026-05-14 18:29:35 | Monitor: on
+2026-05-14 18:29:35 | Timer START | Session #107 | UTC: 2026-05-15T01:29:35.8902233Z
