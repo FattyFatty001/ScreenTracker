@@ -2,3 +2,13 @@
 2026-07-22 02:11:23 | Tracker initialized
 2026-07-22 02:11:23 | Timer START | Session #308 | UTC: 2026-07-22T09:11:23.2395528Z
 2026-07-22 02:11:23 | Monitor: on
+2026-07-22 02:11:55 | Log uploaded to GitHub: logs/2026-07-22.log
+2026-07-22 02:16:14 | Monitor: dimmed
+2026-07-22 02:16:30 | Monitor: off
+2026-07-22 02:16:30 | Timer END   | Session #308 | Reason: monitor_off | Today: 0:05
+2026-07-22 02:34:56 | Screen locked
+2026-07-22 02:34:56 | Screen locked
+2026-07-22 07:43:06 | Monitor: on
+2026-07-22 07:43:21 | Screen unlocked
+2026-07-22 07:43:21 | Timer START | Session #309 | UTC: 2026-07-22T14:43:21.2561857Z
+2026-07-22 07:43:21 | Screen unlocked
