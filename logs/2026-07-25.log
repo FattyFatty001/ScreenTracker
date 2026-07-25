@@ -12,3 +12,12 @@
 2026-07-25 09:03:55 | Timer END   | Session #324 | Reason: monitor_off | Today: 2:01
 2026-07-25 09:07:59 | Monitor: on
 2026-07-25 09:07:59 | Timer START | Session #325 | UTC: 2026-07-25T16:07:59.8423700Z
+2026-07-25 09:20:20 | Log uploaded to GitHub: logs/2026-07-25.log
+2026-07-25 09:28:15 | Screen locked
+2026-07-25 09:28:15 | Timer END   | Session #325 | Reason: locked | Today: 2:21
+2026-07-25 09:28:15 | Screen locked
+2026-07-25 09:28:15 | Monitor: off
+2026-07-25 10:59:03 | Monitor: on
+2026-07-25 10:59:43 | Screen unlocked
+2026-07-25 10:59:43 | Timer START | Session #326 | UTC: 2026-07-25T17:59:43.6785312Z
+2026-07-25 10:59:43 | Screen unlocked
