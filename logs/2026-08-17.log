@@ -38,3 +38,21 @@
 2026-08-17 18:43:43 | Timer START | Session #400 | UTC: 2026-08-18T01:43:43.2089847Z
 2026-08-17 18:43:43 | Screen unlocked
 2026-08-17 19:07:12 | Log uploaded to GitHub: logs/2026-08-17.log
+2026-08-17 19:37:13 | Log uploaded to GitHub: logs/2026-08-17.log
+2026-08-17 19:49:01 | Screen locked
+2026-08-17 19:49:01 | Timer END   | Session #400 | Reason: locked | Today: 3:08
+2026-08-17 19:49:01 | Screen locked
+2026-08-17 19:49:01 | Monitor: off
+2026-08-17 19:49:19 | Monitor: on
+2026-08-17 19:49:34 | Screen unlocked
+2026-08-17 19:49:34 | Timer START | Session #401 | UTC: 2026-08-18T02:49:34.2334012Z
+2026-08-17 19:49:34 | Screen unlocked
+2026-08-17 19:55:37 | Monitor: dimmed
+2026-08-17 19:55:51 | Monitor: off
+2026-08-17 19:55:51 | Timer END   | Session #401 | Reason: monitor_off | Today: 3:15
+2026-08-17 20:06:14 | Screen locked
+2026-08-17 20:06:14 | Screen locked
+2026-08-17 20:24:41 | Monitor: on
+2026-08-17 20:24:52 | Screen unlocked
+2026-08-17 20:24:52 | Timer START | Session #402 | UTC: 2026-08-18T03:24:52.6332730Z
+2026-08-17 20:24:52 | Screen unlocked
