@@ -1,0 +1,10 @@
+2026-08-18 07:31:11 | Monitor: on
+2026-08-18 07:31:17 | Screen unlocked
+2026-08-18 07:31:17 | New day boundary — reset counters
+2026-08-18 07:31:17 | Timer START | Session #403 | UTC: 2026-08-18T14:31:17.6157647Z
+2026-08-18 07:31:17 | Screen unlocked
+2026-08-18 07:45:08 | Monitor: dimmed
+2026-08-18 07:45:23 | Monitor: off
+2026-08-18 07:45:23 | Timer END   | Session #403 | Reason: monitor_off | Today: 0:14
+2026-08-18 07:45:47 | Monitor: on
+2026-08-18 07:45:47 | Timer START | Session #404 | UTC: 2026-08-18T14:45:47.3705806Z
